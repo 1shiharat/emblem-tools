@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>エンブレムツール</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css"
+      rel="stylesheet"
+    />
+    <link href="styles.css" rel="stylesheet" />
+  </head>
+
+  <body>
+    <header class="bg-primary text-white text-center py-3">
+      <h3>エンブレム生成ツール</h3>
+    </header>
+    <div class="container mt-5">
+      <form>
+        <div class="row">
+          <div class="col-md-8 mx-auto">
+            <div class="vstack gap-5">
+              <div class="form-group">
+                <label class="c-heading">1. 画像タイプを選択</label>
+                <div
+                  class="btn-group"
+                  role="group"
+                  aria-label="Basic radio toggle button group"
+                >
+                  <input
+                    type="radio"
+                    class="btn-check"
+                    name="image-type"
+                    id="header"
+                    value="header"
+                    autocomplete="off"
+                    checked
+                  />
+                  <label class="btn btn-outline-primary" for="header"
+                    >X ヘッダー (1500x500)</label
+                  >
+
+                  <input
+                    type="radio"
+                    class="btn-check"
+                    name="image-type"
+                    id="icon"
+                    value="icon"
+                    autocomplete="off"
+                  />
+                  <label class="btn btn-outline-primary" for="icon"
+                    >X アイコン (800x800)</label
+                  >
+
+                  <input
+                    type="radio"
+                    class="btn-check"
+                    name="image-type"
+                    id="custom-size"
+                    value="custom-size"
+                    autocomplete="off"
+                  />
+                  <label class="btn btn-outline-primary" for="custom-size"
+                    >カスタムサイズ</label
+                  >
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="c-heading">2. エンブレムサイズを選択 </label>
+                <br>
+                <div
+                  class="btn-group"
+                  role="group"
+                  aria-label="Basic radio toggle button group"
+                >
+                  <input
+                    type="radio"
+                    class="btn-check"
+                    name="emblem-size"
+                    id="large"
+                    value="large"
+                    autocomplete="off"
+                  />
+                  <label class="btn btn-outline-primary" for="large">大</label>
+
+                  <input
+                    type="radio"
+                    class="btn-check"
+                    name="emblem-size"
+                    id="medium"
+                    value="medium"
+                    autocomplete="off"
+                    checked
+                  />
+                  <label class="btn btn-outline-primary" for="medium">中</label>
+
+                  <input
+                    type="radio"
+                    class="btn-check"
+                    name="emblem-size"
+                    id="small"
+                    value="small"
+                    autocomplete="off"
+                  />
+                  <label class="btn btn-outline-primary" for="small">小</label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="c-heading">3. 背景画像を選択</label>
+                <div class="toggle-container btn-group">
+                  <button
+                    type="button"
+                    class="btn btn-outline-primary"
+                    id="preset-toggle"
+                  >
+                    プリセットから選ぶ
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-outline-primary"
+                    id="upload-toggle"
+                  >
+                    アップロードする
+                  </button>
+                </div>
+                <div id="preset-options" style="display: none">
+                  <div class="thumbnail-container">
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="btn-check"
+                        type="radio"
+                        name="background-type"
+                        id="type1"
+                        value="type1"
+                      />
+                      <label class="form-check-label" for="type1"
+                        ><img src="001.png" alt="タイプ1" class="thumbnail"
+                      /></label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="btn-check"
+                        type="radio"
+                        name="background-type"
+                        id="type2"
+                        value="type2"
+                      />
+                      <label class="form-check-label" for="type2"
+                        ><img src="002.png" alt="タイプ2" class="thumbnail"
+                      /></label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="btn-check"
+                        type="radio"
+                        name="background-type"
+                        id="type3"
+                        value="type3"
+                      />
+                      <label class="form-check-label" for="type3"
+                        ><img src="003.png" alt="タイプ3" class="thumbnail"
+                      /></label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="btn-check"
+                        type="radio"
+                        name="background-type"
+                        id="type4"
+                        value="type4"
+                      />
+                      <label class="form-check-label" for="type4"
+                        ><img src="004.png" alt="タイプ4" class="thumbnail"
+                      /></label>
+                    </div>
+                  </div>
+                </div>
+                <div id="upload-options">
+                  <label for="upload-image">背景画像をアップロード :</label>
+                  <input
+                    type="file"
+                    class="form-control-file"
+                    id="upload-image"
+                    accept="image/*"
+                  />
+                </div>
+              </div>
+
+              <div class="mt-3">
+                <label class="c-heading">4. 切り抜き箇所を選択</label>
+                <div class="img-placeholder">
+                  <span>先に画像を選択してください</span>
+                </div>
+                <div id="image-preview">
+                  <img
+                    id="image-to-crop"
+                    class="img-fluid"
+                    crossorigin="anonymous"
+                  />
+                </div>
+              </div>
+
+              <div class="mt-3">
+                <label class="c-heading">5. エンブレムの位置を調整</label>
+                <div class="form-group" id="emblem-upload">
+                  <label for="upload-emblem" class="c-heading is-mini">エンブレムをアップロード　</label>
+                  <input
+                    type="file"
+                    class="form-control-file"
+                    id="upload-emblem"
+                    accept="image/*"
+                  />
+                  <img
+                    id="emblem-preview"
+                    class="mt-2"
+                    alt="エンブレムプレビュー"
+                  />
+                </div>
+                <div class="form-group emplacement-radio">
+                  <div>
+                    <input
+                      type="radio"
+                      name="emblem-position"
+                      id="top-left"
+                      value="top-left"
+                    />
+                    <label for="top-left">左上</label>
+                  </div>
+                  <div>
+                    <input
+                      type="radio"
+                      name="emblem-position"
+                      id="top-center"
+                      value="top-center"
+                    />
+                    <label for="top-center">中央上</label>
+                  </div>
+                  <div>
+                    <input
+                      type="radio"
+                      name="emblem-position"
+                      id="top-right"
+                      value="top-right"
+                    />
+                    <label for="top-right">右上</label>
+                  </div>
+                  <div>
+                    <input
+                      type="radio"
+                      name="emblem-position"
+                      id="center-left"
+                      value="center-left"
+                    />
+                    <label for="center-left">左中央</label>
+                  </div>
+                  <div>
+                    <input
+                      type="radio"
+                      name="emblem-position"
+                      id="center"
+                      value="center"
+                      checked
+                    />
+                    <label for="center">中央</label>
+                  </div>
+                  <div>
+                    <input
+                      type="radio"
+                      name="emblem-position"
+                      id="center-right"
+                      value="center-right"
+                    />
+                    <label for="center-right">右中央</label>
+                  </div>
+                  <div>
+                    <input
+                      type="radio"
+                      name="emblem-position"
+                      id="bottom-left"
+                      value="bottom-left"
+                    />
+                    <label for="bottom-left">左下</label>
+                  </div>
+                  <div>
+                    <input
+                      type="radio"
+                      name="emblem-position"
+                      id="bottom-center"
+                      value="bottom-center"
+                    />
+                    <label for="bottom-center">中央下</label>
+                  </div>
+                  <div>
+                    <input
+                      type="radio"
+                      name="emblem-position"
+                      id="bottom-right"
+                      value="bottom-right"
+                    />
+                    <label for="bottom-right">右下</label>
+                  </div>
+                </div>
+                <div class="img-placeholder">
+                  <span>先に画像を選択してください</span>
+                </div>
+                <div class="canvas-container">
+                  
+                  <canvas id="canvas"></canvas>
+                  <img
+                    id="emblem"
+                    src="logo.png"
+                    alt="エンブレム"
+                    style="display: none"
+                  />
+                </div>
+              </div>
+
+              <div class="text-center mt-4">
+                <div class="d-grid gap-2">
+                <button id="download-btn" class="btn btn-lg btn-primary">
+                  ダウンロード
+                </button>
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-toBlob@1.0.8/canvas-toBlob.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
