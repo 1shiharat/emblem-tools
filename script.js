@@ -118,6 +118,8 @@ uploadImage.addEventListener("change", (e) => {
     reader.onload = (e) => {
       imageToCrop.src = e.target.result;
       initCropper();
+      saveImageToLocalStorage(e.target.result);
+      addImageToPresetOptions(e.target.result);
     };
     reader.readAsDataURL(file);
   }
@@ -134,6 +136,8 @@ uploadEmblem.addEventListener("change", (e) => {
         emblemPreview.style.display = "block";
         updateEmblemSize();
         updateCanvas();
+        saveEmblemToLocalStorage(e.target.result);
+        addEmblemToPresetOptions(e.target.result);
       };
       emblem.src = e.target.result;
     };
@@ -149,9 +153,12 @@ function updateEmblemSize() {
     emblemWidth = 454;
     emblemHeight = emblemWidth / emblemAspectRatio;
   } else if (size === "medium") {
-    emblemWidth = 250;
+    emblemWidth = 300;
     emblemHeight = emblemWidth / emblemAspectRatio;
   } else if (size === "small") {
+    emblemWidth = 200;
+    emblemHeight = emblemWidth / emblemAspectRatio;
+  } else if (size === "x-small") {
     emblemWidth = 100;
     emblemHeight = emblemWidth / emblemAspectRatio;
   }
@@ -346,14 +353,142 @@ function setEmblemPosition(position) {
   constrainEmblem();
 }
 
+// ローカルストレージに画像を保存
+function saveImageToLocalStorage(imageData) {
+  let images = JSON.parse(localStorage.getItem("uploadedImages")) || [];
+  images.push(imageData);
+  localStorage.setItem("uploadedImages", JSON.stringify(images));
+}
+
+// エンブレムをローカルストレージに保存
+function saveEmblemToLocalStorage(emblemData) {
+  let emblems = JSON.parse(localStorage.getItem("uploadedEmblems")) || [];
+  emblems.push(emblemData);
+  localStorage.setItem("uploadedEmblems", JSON.stringify(emblems));
+}
+
+// プリセットオプションに画像を追加
+function addImageToPresetOptions(imageData) {
+  const newOption = document.createElement("div");
+  newOption.classList.add("form-check", "form-check-inline");
+  const newInput = document.createElement("input");
+  newInput.classList.add("btn-check");
+  newInput.type = "radio";
+  newInput.name = "background-type";
+  newInput.value = imageData;
+  newInput.id = `custom-${Date.now()}`;
+  newOption.appendChild(newInput);
+  const newLabel = document.createElement("label");
+  newLabel.classList.add("form-check-label");
+  newLabel.htmlFor = newInput.id;
+  const newImg = document.createElement("img");
+  newImg.src = imageData;
+  newImg.classList.add("thumbnail");
+  newLabel.appendChild(newImg);
+  newOption.appendChild(newLabel);
+  
+  // 削除ボタンを追加
+  const deleteButton = document.createElement("button");
+  deleteButton.textContent = "削除";
+  deleteButton.classList.add("btn", "btn-danger", "btn-sm", "ml-2");
+  newOption.appendChild(deleteButton);
+
+  presetOptions.querySelector(".thumbnail-container").appendChild(newOption);
+
+  newInput.addEventListener("change", () => {
+    imageToCrop.src = imageData;
+    imageToCrop.crossorigin = "anonymous";
+    initCropper();
+  });
+
+  deleteButton.addEventListener("click", () => {
+    removeImageFromLocalStorage(imageData);
+    newOption.remove();
+  });
+}
+
+// プリセットオプションにエンブレムを追加
+function addEmblemToPresetOptions(emblemData) {
+  const newOption = document.createElement("div");
+  newOption.classList.add("form-check", "form-check-inline");
+  const newInput = document.createElement("input");
+  newInput.classList.add("btn-check");
+  newInput.type = "radio";
+  newInput.name = "emblem-type";
+  newInput.value = emblemData;
+  newInput.id = `custom-emblem-${Date.now()}`;
+  newOption.appendChild(newInput);
+  const newLabel = document.createElement("label");
+  newLabel.classList.add("form-check-label");
+  newLabel.htmlFor = newInput.id;
+  const newImg = document.createElement("img");
+  newImg.src = emblemData;
+  newImg.classList.add("thumbnail");
+  newLabel.appendChild(newImg);
+  newOption.appendChild(newLabel);
+  
+  // 削除ボタンを追加
+  const deleteButton = document.createElement("button");
+  deleteButton.textContent = "削除";
+  deleteButton.classList.add("btn", "btn-danger", "btn-sm", "ml-2");
+  newOption.appendChild(deleteButton);
+
+  document.getElementById("emblem-preset-options").appendChild(newOption);
+
+  newInput.addEventListener("change", () => {
+    emblem.src = emblemData;
+    emblem.crossorigin = "anonymous";
+    emblem.onload = () => {
+      emblemAspectRatio = emblem.width / emblem.height;
+      updateEmblemSize();
+      updateCanvas();
+    };
+  });
+
+  deleteButton.addEventListener("click", () => {
+    removeEmblemFromLocalStorage(emblemData);
+    newOption.remove();
+  });
+}
+
+// ローカルストレージから画像を削除
+function removeImageFromLocalStorage(imageData) {
+  let images = JSON.parse(localStorage.getItem("uploadedImages")) || [];
+  images = images.filter((image) => image !== imageData);
+  localStorage.setItem("uploadedImages", JSON.stringify(images));
+}
+
+// ローカルストレージからエンブレムを削除
+function removeEmblemFromLocalStorage(emblemData) {
+  let emblems = JSON.parse(localStorage.getItem("uploadedEmblems")) || [];
+  emblems = emblems.filter((emblem) => emblem !== emblemData);
+  localStorage.setItem("uploadedEmblems", JSON.stringify(emblems));
+}
+
+// 初期設定：ローカルストレージから画像を読み込み、プリセットオプションに追加
+function loadImagesFromLocalStorage() {
+  const images = JSON.parse(localStorage.getItem("uploadedImages")) || [];
+  images.forEach((imageData) => {
+    addImageToPresetOptions(imageData);
+  });
+}
+
+// 初期設定：ローカルストレージからエンブレムを読み込み、プリセットオプションに追加
+function loadEmblemsFromLocalStorage() {
+  const emblems = JSON.parse(localStorage.getItem("uploadedEmblems")) || [];
+  emblems.forEach((emblemData) => {
+    addEmblemToPresetOptions(emblemData);
+  });
+}
+
+loadImagesFromLocalStorage();
+loadEmblemsFromLocalStorage();
+
 // 初期設定：customが選択されているので、アップロードフィールドを表示
-console.log(presetOptions);
-console.log(customUpload);
-presetOptions.style.display = "none";
-customUpload.style.display = "block";
+presetOptions.style.display = "block";
+customUpload.style.display = "none";
 
 // 初期設定：中サイズのエンブレムを中央に配置
-console.log(emblemPositionRadios);
 emblemPositionRadios[4].checked = true; // 中央のラジオボタンをチェック
 setEmblemPosition("center"); // 中央に配置
 updateCanvas();
