@@ -87,8 +87,11 @@ body {
   font-size: 0.8rem;
   font-weight: normal;
 }
+
+@media(min-width: 768px){
 .btn-group .btn {
   white-space: nowrap;
+}
 }
 
 h3 {

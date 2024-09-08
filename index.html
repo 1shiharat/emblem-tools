@@ -26,6 +26,7 @@
             <div class="vstack gap-5">
               <div class="form-group">
                 <label class="c-heading">1. 画像タイプを選択</label>
+                <br>
                 <div
                   class="btn-group"
                   role="group"
@@ -40,7 +41,7 @@
                     autocomplete="off"
                     checked
                   />
-                  <label class="btn btn-outline-primary" for="header"
+                  <label class="btn btn-outline-primary btn-sm" for="header"
                     >X ヘッダー (1500x500)</label
                   >
 
@@ -52,7 +53,7 @@
                     value="icon"
                     autocomplete="off"
                   />
-                  <label class="btn btn-outline-primary" for="icon"
+                  <label class="btn btn-outline-primary btn-sm" for="icon"
                     >X アイコン (800x800)</label
                   >
 
@@ -64,7 +65,7 @@
                     value="custom-size"
                     autocomplete="off"
                   />
-                  <label class="btn btn-outline-primary" for="custom-size"
+                  <label class="btn btn-outline-primary btn-sm" for="custom-size"
                     >カスタムサイズ</label
                   >
                 </div>
@@ -310,7 +311,6 @@
                   <span>先に画像を選択してください</span>
                 </div>
                 <div class="canvas-container">
-                  
                   <canvas id="canvas"></canvas>
                   <img
                     id="emblem"
@@ -319,6 +319,7 @@
                     style="display: none"
                   />
                 </div>
+                <p style="margin-top: 10px; font-size: 0.8em">※ エンブレムをドラッグすることで移動することも可能です。</p>
               </div>
 
               <div class="text-center mt-4">
