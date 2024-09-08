@@ -75,6 +75,7 @@
 
                 <div class="form-group">
                   <label class="c-heading">2. 背景画像を選択</label>
+                  <p class="text-right"><small>※アップロードした画像はこのブラウザのみにプリセットとしてキャッシュされます。</small></p>
                   <div class="toggle-container btn-group">
                     <input
                       type="radio"
@@ -237,6 +238,7 @@
                       </h2>
                       <div id="collapseEmblemUpload" class="accordion-collapse collapse" aria-labelledby="headingEmblemUpload" data-bs-parent="#emblemAccordion">
                         <div class="accordion-body">
+                          <p class="text-end"><small>※アップロードしたエンブレムはこのブラウザのみにプリセットとしてキャッシュされます。</small></p>
                           <div class="form-group" id="emblem-upload">
                             <label for="upload-emblem" class="c-heading is-mini">エンブレムをアップロード</label>
                             <input
@@ -260,9 +262,13 @@
                           エンブレムプリセット
                         </button>
                       </h2>
+                      <img id="emblem" src="logo.png" alt="エンブレム" style="display: none" />
+                            <img id="unko-emblem" src="unko.png" alt="うんこエンブレム" style="display: none" />
                       <div id="collapseEmblemPreset" class="accordion-collapse collapse" aria-labelledby="headingEmblemPreset" data-bs-parent="#emblemAccordion">
                         <div class="accordion-body">
-                          <div id="emblem-preset-options" class="thumbnail-container"></div>
+                          <div id="emblem-preset-options" class="thumbnail-container">
+                            
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -381,8 +387,8 @@
                       <input type="range" id="saturation" min="0" max="200" value="100" class="filter-slider">
                     </div>
                     <div class="filter-control">
-                      <label for="hue-rotate">色相: <span id="hue-rotate-value">0deg</span></label>
-                      <input type="range" id="hue-rotate" min="0" max="360" value="0" class="filter-slider">
+                      <label for="hue-rotate">色相: <span id="hueRotate-value">0deg</span></label>
+                      <input type="range" id="hueRotate" min="0" max="360" value="0" class="filter-slider">
                     </div>
                   </div>
                   <button id="reset-filters" class="btn btn-secondary mt-3">フィルターをリセット</button>

@@ -23,6 +23,8 @@ const typeImages = {
   type4: "004.png",
 };
 
+const defaultEmblems = ['logo.png', 'unko.png'];
+
 let cropper;
 let emblemPosition = { x: 0, y: 0 };
 let isDragging = false;
@@ -38,8 +40,6 @@ let filterSettings = {
 };
 
 function updateFilter() {
-  const filterString = `brightness(${filterSettings.brightness}%) contrast(${filterSettings.contrast}%) saturate(${filterSettings.saturation}%) hue-rotate(${filterSettings.hueRotate}deg)`;
-  canvas.style.filter = filterString;
   updateCanvas();
 }
 
@@ -47,8 +47,10 @@ document.querySelectorAll('.filter-slider').forEach(slider => {
   slider.addEventListener('input', (e) => {
     const filterId = e.target.id;
     const value = e.target.value;
+    console.log(value)
+    console.log(filterId)
     filterSettings[filterId] = value;
-    document.getElementById(`${filterId}-value`).textContent = filterId === 'hue-rotate' ? `${value}deg` : `${value}%`;
+    document.getElementById(`${filterId}-value`).textContent = filterId === 'hueRotate' ? `${value}deg` : `${value}%`;
     updateFilter();
   });
 });
@@ -63,7 +65,7 @@ document.getElementById('reset-filters').addEventListener('click', (e) => {
   };
   document.querySelectorAll('.filter-slider').forEach(slider => {
     slider.value = filterSettings[slider.id];
-    document.getElementById(`${slider.id}-value`).textContent = slider.id === 'hue-rotate' ? '0deg' : '100%';
+    document.getElementById(`${slider.id}-value`).textContent = slider.id === 'hueRotate' ? '0deg' : '100%';
   });
   updateFilter();
 });
@@ -269,12 +271,13 @@ function updateCanvas() {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   
-  // 背景画像にフィルターを適用
-  ctx.filter = `brightness(${filterSettings.brightness}%) contrast(${filterSettings.contrast}%) saturate(${filterSettings.saturation}%) hue-rotate(${filterSettings.hueRotate}deg)`;
+  // 背景画像を描画
   ctx.drawImage(croppedImage, 0, 0);
+
+  // フィルターを適用
+  applyFilters();
   
-  // エンブレムにはフィルターを適用しない
-  ctx.filter = 'none';
+  // エンブレムを描画
   ctx.drawImage(
     emblem,
     emblemPosition.x,
@@ -289,8 +292,26 @@ function updateCanvas() {
     ctx.clip();
   }
 
-  canvas.style.filter = 'none'; // キャンバス自体のフィルターを解除
   canvas.style.width = "100%";
+}
+
+function applyFilters() {
+  const tempCanvas = document.createElement('canvas');
+  tempCanvas.width = canvas.width;
+  tempCanvas.height = canvas.height;
+  const tempCtx = tempCanvas.getContext('2d');
+
+  // 元の画像を一時的なキャンバスにコピー
+  tempCtx.drawImage(canvas, 0, 0);
+
+  // フィルターを適用
+  tempCtx.filter = `brightness(${filterSettings.brightness}%) contrast(${filterSettings.contrast}%) saturate(${filterSettings.saturation}%) hue-rotate(${filterSettings.hueRotate}deg)`;
+  console.log(tempCtx.filter)
+  tempCtx.drawImage(tempCanvas, 0, 0);
+
+  // フィルターを適用した画像を元のキャンバスに描画
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(tempCanvas, 0, 0);
 }
 
 function constrainEmblem() {
@@ -454,7 +475,7 @@ function addImageToPresetOptions(imageData) {
 }
 
 // プリセットオプションにエンブレムを追加
-function addEmblemToPresetOptions(emblemData) {
+function addEmblemToPresetOptions(emblemData, isDefault = false) {
   const newOption = document.createElement("div");
   newOption.classList.add("form-check", "form-check-inline");
   const newInput = document.createElement("input");
@@ -462,7 +483,7 @@ function addEmblemToPresetOptions(emblemData) {
   newInput.type = "radio";
   newInput.name = "emblem-type";
   newInput.value = emblemData;
-  newInput.id = `custom-emblem-${Date.now()}`;
+  newInput.id = `custom-emblem-${Date.now()}-${newInput.value}`;
   newOption.appendChild(newInput);
   const newLabel = document.createElement("label");
   newLabel.classList.add("form-check-label");
@@ -473,11 +494,18 @@ function addEmblemToPresetOptions(emblemData) {
   newLabel.appendChild(newImg);
   newOption.appendChild(newLabel);
   
-  // 削除ボタンを追加
-  const deleteButton = document.createElement("button");
-  deleteButton.textContent = "削除";
-  deleteButton.classList.add("btn", "btn-danger", "btn-sm", "ml-2");
-  newOption.appendChild(deleteButton);
+  // デフォルトのエンブレムでない場合のみ削除ボタンを追加
+  if (!isDefault) {
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "削除";
+    deleteButton.classList.add("btn", "btn-danger", "btn-sm", "ml-2");
+    newOption.appendChild(deleteButton);
+
+    deleteButton.addEventListener("click", () => {
+      removeEmblemFromLocalStorage(emblemData);
+      newOption.remove();
+    });
+  }
 
   document.getElementById("emblem-preset-options").appendChild(newOption);
 
@@ -490,12 +518,8 @@ function addEmblemToPresetOptions(emblemData) {
       updateCanvas();
     };
   });
-
-  deleteButton.addEventListener("click", () => {
-    removeEmblemFromLocalStorage(emblemData);
-    newOption.remove();
-  });
 }
+
 
 // ローカルストレージから画像を削除
 function removeImageFromLocalStorage(imageData) {
@@ -519,22 +543,42 @@ function loadImagesFromLocalStorage() {
   });
 }
 
-// 初期設定：ローカルストレージからエンブレムを読み込み、プリセットオプションに追加
+// 初期設定：ローカルストレージ���らエンブレムを読み込み、プリセットオプションに追加
 function loadEmblemsFromLocalStorage() {
+  // エンブレムプリセットオプションをクリア
+  const emblemPresetOptions = document.getElementById("emblem-preset-options");
+  emblemPresetOptions.innerHTML = '';
+
+  // デフォルトのエンブレムを追加
+  defaultEmblems.forEach((emblemData) => {
+    addEmblemToPresetOptions(emblemData, true);
+  });
+
+  // ローカルストレージから追加のエンブレムを読み込む
   const emblems = JSON.parse(localStorage.getItem("uploadedEmblems")) || [];
   emblems.forEach((emblemData) => {
     addEmblemToPresetOptions(emblemData);
   });
+
+  // 最初のエンブレムを選択状態にする
+  const firstEmblemInput = emblemPresetOptions.querySelector('input[type="radio"]');
+  if (firstEmblemInput) {
+    firstEmblemInput.checked = true;
+    firstEmblemInput.dispatchEvent(new Event('change'));
+  }
 }
 
-loadImagesFromLocalStorage();
-loadEmblemsFromLocalStorage();
 
-// 初期設定：customが選択されているので、アップロードフィールドを表示
-presetOptions.style.display = "block";
-customUpload.style.display = "none";
+document.addEventListener('DOMContentLoaded', () => {
+  loadImagesFromLocalStorage();
+  loadEmblemsFromLocalStorage();
 
-// 初期設定：中サイズのエンブレムを中央に配置
-emblemPositionRadios[4].checked = true; // 中央のラジオボタンをチェック
-setEmblemPosition("center"); // 中央に配置
-updateCanvas();
+  // 初期設定：customが選択されているので、アップロードフィールドを表示
+  presetOptions.style.display = "block";
+  customUpload.style.display = "none";
+
+  // 初期設定：中サイズのエンブレムを中央に配置
+  emblemPositionRadios[4].checked = true; // 中央のラジオボタンをチェック
+  setEmblemPosition("center"); // 中央に配置
+  updateCanvas();
+});
