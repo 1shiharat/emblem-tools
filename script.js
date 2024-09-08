@@ -30,6 +30,45 @@ let emblemWidth = 250; // 初期エンブレムサイズ
 let emblemHeight = 207;
 let emblemAspectRatio = emblemWidth / emblemHeight;
 
+let filterSettings = {
+  brightness: 100,
+  contrast: 100,
+  saturation: 100,
+  hueRotate: 0
+};
+
+function updateFilter() {
+  const filterString = `brightness(${filterSettings.brightness}%) contrast(${filterSettings.contrast}%) saturate(${filterSettings.saturation}%) hue-rotate(${filterSettings.hueRotate}deg)`;
+  canvas.style.filter = filterString;
+  updateCanvas();
+}
+
+document.querySelectorAll('.filter-slider').forEach(slider => {
+  slider.addEventListener('input', (e) => {
+    const filterId = e.target.id;
+    const value = e.target.value;
+    filterSettings[filterId] = value;
+    document.getElementById(`${filterId}-value`).textContent = filterId === 'hue-rotate' ? `${value}deg` : `${value}%`;
+    updateFilter();
+  });
+});
+
+document.getElementById('reset-filters').addEventListener('click', (e) => {
+  e.preventDefault()
+  filterSettings = {
+    brightness: 100,
+    contrast: 100,
+    saturation: 100,
+    hueRotate: 0
+  };
+  document.querySelectorAll('.filter-slider').forEach(slider => {
+    slider.value = filterSettings[slider.id];
+    document.getElementById(`${slider.id}-value`).textContent = slider.id === 'hue-rotate' ? '0deg' : '100%';
+  });
+  updateFilter();
+});
+
+
 backgroundInputs.forEach((input) => {
   input.addEventListener("change", (e) => {
     if (input.value === "custom") {
@@ -229,7 +268,13 @@ function updateCanvas() {
   });
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  // 背景画像にフィルターを適用
+  ctx.filter = `brightness(${filterSettings.brightness}%) contrast(${filterSettings.contrast}%) saturate(${filterSettings.saturation}%) hue-rotate(${filterSettings.hueRotate}deg)`;
   ctx.drawImage(croppedImage, 0, 0);
+  
+  // エンブレムにはフィルターを適用しない
+  ctx.filter = 'none';
   ctx.drawImage(
     emblem,
     emblemPosition.x,
@@ -244,6 +289,7 @@ function updateCanvas() {
     ctx.clip();
   }
 
+  canvas.style.filter = 'none'; // キャンバス自体のフィルターを解除
   canvas.style.width = "100%";
 }
 
@@ -258,7 +304,7 @@ function constrainEmblem() {
 
 downloadBtn.addEventListener("click", (e) => {
   e.preventDefault();
-  updateCanvas();
+  updateCanvas(); // フィルターを適用した状態でキャンバスを更新
   const isIOS =
     !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
 

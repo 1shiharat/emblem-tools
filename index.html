@@ -365,6 +365,28 @@
                   </div>
                   <p style="margin-top: 10px; font-size: 0.8em">※ エンブレムをドラッグすることで移動することも可能です。</p>
                 </div>
+                <div class="form-group">
+                  <label class="c-heading">6. フィルター調整</label>
+                  <div class="filter-controls">
+                    <div class="filter-control">
+                      <label for="brightness">明るさ: <span id="brightness-value">100%</span></label>
+                      <input type="range" id="brightness" min="0" max="200" value="100" class="filter-slider">
+                    </div>
+                    <div class="filter-control">
+                      <label for="contrast">コントラスト: <span id="contrast-value">100%</span></label>
+                      <input type="range" id="contrast" min="0" max="200" value="100" class="filter-slider">
+                    </div>
+                    <div class="filter-control">
+                      <label for="saturation">彩度: <span id="saturation-value">100%</span></label>
+                      <input type="range" id="saturation" min="0" max="200" value="100" class="filter-slider">
+                    </div>
+                    <div class="filter-control">
+                      <label for="hue-rotate">色相: <span id="hue-rotate-value">0deg</span></label>
+                      <input type="range" id="hue-rotate" min="0" max="360" value="0" class="filter-slider">
+                    </div>
+                  </div>
+                  <button id="reset-filters" class="btn btn-secondary mt-3">フィルターをリセット</button>
+                </div>
 
                 <div class="text-center mt-4">
                   <div class="d-grid gap-2">
