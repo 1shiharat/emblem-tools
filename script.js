@@ -36,7 +36,12 @@ let filterSettings = {
   brightness: 100,
   contrast: 100,
   saturation: 100,
-  hueRotate: 0
+  hueRotate: 0,
+  sepia: 0,
+  grayscale: 0,
+  invert: 0,
+  blur: 0,
+  opacity: 100
 };
 
 function updateFilter() {
@@ -47,25 +52,30 @@ document.querySelectorAll('.filter-slider').forEach(slider => {
   slider.addEventListener('input', (e) => {
     const filterId = e.target.id;
     const value = e.target.value;
-    console.log(value)
-    console.log(filterId)
     filterSettings[filterId] = value;
-    document.getElementById(`${filterId}-value`).textContent = filterId === 'hueRotate' ? `${value}deg` : `${value}%`;
+    const unit = filterId === 'hueRotate' ? 'deg' : filterId === 'blur' ? 'px' : '%';
+    document.getElementById(`${filterId}-value`).textContent = `${value}${unit}`;
     updateFilter();
   });
 });
 
 document.getElementById('reset-filters').addEventListener('click', (e) => {
-  e.preventDefault()
+  e.preventDefault();
   filterSettings = {
     brightness: 100,
     contrast: 100,
     saturation: 100,
-    hueRotate: 0
+    hueRotate: 0,
+    sepia: 0,
+    grayscale: 0,
+    invert: 0,
+    blur: 0,
+    opacity: 100
   };
   document.querySelectorAll('.filter-slider').forEach(slider => {
     slider.value = filterSettings[slider.id];
-    document.getElementById(`${slider.id}-value`).textContent = slider.id === 'hueRotate' ? '0deg' : '100%';
+    const unit = slider.id === 'hueRotate' ? 'deg' : slider.id === 'blur' ? 'px' : '%';
+    document.getElementById(`${slider.id}-value`).textContent = `${filterSettings[slider.id]}${unit}`;
   });
   updateFilter();
 });
@@ -305,8 +315,18 @@ function applyFilters() {
   tempCtx.drawImage(canvas, 0, 0);
 
   // フィルターを適用
-  tempCtx.filter = `brightness(${filterSettings.brightness}%) contrast(${filterSettings.contrast}%) saturate(${filterSettings.saturation}%) hue-rotate(${filterSettings.hueRotate}deg)`;
-  console.log(tempCtx.filter)
+  tempCtx.filter = `
+    brightness(${filterSettings.brightness}%)
+    contrast(${filterSettings.contrast}%)
+    saturate(${filterSettings.saturation}%)
+    hue-rotate(${filterSettings.hueRotate}deg)
+    sepia(${filterSettings.sepia}%)
+    grayscale(${filterSettings.grayscale}%)
+    invert(${filterSettings.invert}%)
+    blur(${filterSettings.blur}px)
+    opacity(${filterSettings.opacity}%)
+  `;
+  console.log(tempCtx.filter);
   tempCtx.drawImage(tempCanvas, 0, 0);
 
   // フィルターを適用した画像を元のキャンバスに描画
@@ -543,7 +563,7 @@ function loadImagesFromLocalStorage() {
   });
 }
 
-// 初期設定：ローカルストレージ���らエンブレムを読み込み、プリセットオプションに追加
+// 初期設定：ローカルストレージからエンブレムを読み込み、プリセットオプションに追加
 function loadEmblemsFromLocalStorage() {
   // エンブレムプリセットオプションをクリア
   const emblemPresetOptions = document.getElementById("emblem-preset-options");

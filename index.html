@@ -13,6 +13,7 @@
       rel="stylesheet"
     />
     <link href="styles.css" rel="stylesheet" />
+      <script src="https://cdn.jsdelivr.net/npm/context-filter-polyfill/dist/index.min.js"></script>
   </head>
 
   <body>
@@ -387,8 +388,28 @@
                       <input type="range" id="saturation" min="0" max="200" value="100" class="filter-slider">
                     </div>
                     <div class="filter-control">
-                      <label for="hue-rotate">色相: <span id="hueRotate-value">0deg</span></label>
+                      <label for="hueRotate">色相: <span id="hueRotate-value">0deg</span></label>
                       <input type="range" id="hueRotate" min="0" max="360" value="0" class="filter-slider">
+                    </div>
+                    <div class="filter-control">
+                      <label for="sepia">セピア: <span id="sepia-value">0%</span></label>
+                      <input type="range" id="sepia" min="0" max="100" value="0" class="filter-slider">
+                    </div>
+                    <div class="filter-control">
+                      <label for="grayscale">グレースケール: <span id="grayscale-value">0%</span></label>
+                      <input type="range" id="grayscale" min="0" max="100" value="0" class="filter-slider">
+                    </div>
+                    <div class="filter-control">
+                      <label for="invert">色反転: <span id="invert-value">0%</span></label>
+                      <input type="range" id="invert" min="0" max="100" value="0" class="filter-slider">
+                    </div>
+                    <div class="filter-control">
+                      <label for="blur">ぼかし: <span id="blur-value">0px</span></label>
+                      <input type="range" id="blur" min="0" max="10" value="0" class="filter-slider">
+                    </div>
+                    <div class="filter-control">
+                      <label for="opacity">不透明度: <span id="opacity-value">100%</span></label>
+                      <input type="range" id="opacity" min="0" max="100" value="100" class="filter-slider">
                     </div>
                   </div>
                   <button id="reset-filters" class="btn btn-secondary mt-3">フィルターをリセット</button>
